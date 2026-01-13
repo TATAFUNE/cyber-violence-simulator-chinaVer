@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>iPhone Pro 网暴模拟器</title>
+    <style>
+        :root {
+            --ios-bg: #f2f2f7; --weibo: #eb7350; --xhs: #ff2442; --bili: #fb7299;
+            --ios-red: #ff3b30; --ios-green: #34c759;
+        }
+        body { margin: 0; background: #1a1a1a; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+        .phone { width: 375px; height: 812px; background: #000; border: 12px solid #333; border-radius: 55px; position: relative; overflow: hidden; box-shadow: 0 0 100px rgba(0,0,0,0.8); }
+        .status-bar { height: 44px; width: 100%; position: absolute; top: 0; z-index: 10001; display: flex; justify-content: space-between; padding: 0 32px; box-sizing: border-box; align-items: center; color: white; }
+        .status-left { font-size: 15px; font-weight: 600; letter-spacing: -0.2px; }
+        .status-right { display: flex; align-items: center; gap: 6px; }
+        .signal-bars { display: flex; align-items: flex-end; gap: 1.5px; height: 10px; }
+        .bar { width: 3px; background: rgba(255,255,255,0.3); border-radius: 1px; }
+        .bar.fill { background: white; }
+        .bar1 { height: 3px; } .bar2 { height: 5px; } .bar3 { height: 7.5px; } .bar4 { height: 10px; }
+        .battery-container { display: flex; align-items: center; gap: 4px; }
+        .battery-body { width: 25px; height: 12px; border: 1px solid rgba(255,255,255,0.4); border-radius: 3.5px; position: relative; padding: 1px; display: flex; align-items: center; }
+        .battery-level { height: 8px; border-radius: 1.5px; width: 18%; background: var(--ios-red); }
+        .battery-cap { width: 1.5px; height: 4px; background: rgba(255,255,255,0.4); border-radius: 0 1px 1px 0; }
+        .battery-percent { font-size: 11px; font-weight: 500; }
+        .system-push { position: absolute; top: 50px; left: 12px; right: 12px; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px); padding: 12px 16px; border-radius: 22px; box-shadow: 0 15px 35px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 12px; z-index: 10002; transform: translateY(-250%); transition: transform 0.5s cubic-bezier(0.18, 0.89, 0.32, 1.28); }
+        .system-push.show { transform: translateY(0); }
+        .push-logo { width: 24px; height: 24px; border-radius: 6px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px; }
+        .desktop { padding: 60px 20px; display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-rows: min-content; gap: 28px 15px; background: url('https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=1000') center/cover; height: 100%; box-sizing: border-box; align-content: flex-start; }
+        .app-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; position: relative; }
+        .app-icon { width: 60px; height: 60px; border-radius: 14px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); background-size: cover; }
+        .app-name { color: white; font-size: 11px; margin-top: 6px; text-align: center; text-shadow: 0 1px 2px rgba(0,0,0,0.8); }
+        .dock { position: absolute; bottom: 20px; left: 15px; right: 15px; height: 90px; background: rgba(255,255,255,0.25); backdrop-filter: blur(30px); border-radius: 35px; display: flex; justify-content: space-evenly; align-items: center; }
+        .badge { position: absolute; top: -5px; right: -2px; background: var(--ios-red); color: white; border-radius: 12px; padding: 2px 6px; font-size: 12px; font-weight: bold; border: 2px solid white; display: none; z-index: 5; }
+        .view { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #fff; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 20000; display: flex; flex-direction: column; }
+        .view.active { transform: translateY(0); }
+        .nav-bar { padding: 50px 20px 15px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #eee; position: relative; z-index: 20001; background: #fff; }
+        .back-btn { color: #007aff; font-size: 17px; cursor: pointer; }
+        .msg-grid { display: flex; justify-content: space-around; padding: 25px 10px; border-bottom: 10px solid #f2f2f7; }
+        .grid-btn { display: flex; flex-direction: column; align-items: center; position: relative; width: 80px; }
+        .circle-icon { width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; margin-bottom: 8px; }
+        .msg-list { flex: 1; overflow-y: auto; background: #fff; }
+        .comment-item { padding: 15px; border-bottom: 1px solid #f2f2f7; display: flex; gap: 12px; animation: fadeIn 0.4s; }
+        .avatar { width: 40px; height: 40px; border-radius: 50%; background: #e5e5ea; flex-shrink: 0; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+<div class="phone">
+    <div class="status-bar">
+        <div class="status-left" id="currentTime">--:--</div>
+        <div class="status-right">
+            <div class="signal-bars">
+                <div class="bar bar1 fill"></div><div class="bar bar2 fill"></div><div class="bar bar3 fill"></div><div class="bar bar4"></div>
+            </div>
+            <span style="font-size: 11px; font-weight: 600;">LTE</span>
+            <div class="battery-container">
+                <span class="battery-percent">18%</span>
+                <div class="battery-body"><div class="battery-level"></div></div>
+                <div class="battery-cap"></div>
+            </div>
+        </div>
+    </div>
+    <div id="pushNotif" class="system-push">
+        <div id="pushIcon" class="push-logo"></div>
+        <div style="flex:1; overflow:hidden;">
+            <div id="pushAppName" style="font-weight:bold; font-size:12px; color:#000;"></div>
+            <div id="pushText" style="font-size:13px; color:#333; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"></div>
+        </div>
+    </div>
+    <div class="desktop" id="homeScreen">
+        <div class="app-item" onclick="openApp('weibo')">
+            <div class="app-icon" style="background: linear-gradient(135deg, #ff9933, #eb7350);"></div>
+            <div class="badge" id="badge-weibo">0</div>
+            <div class="app-name">微博</div>
+        </div>
+        <div class="app-item" onclick="openApp('xhs')">
+            <div class="app-icon" style="background-color:var(--xhs)"></div>
+            <div class="badge" id="badge-xhs">0</div>
+            <div class="app-name">小红书</div>
+        </div>
+        <div class="app-item" onclick="openApp('bili')">
+            <div class="app-icon" style="background-color:#00aeec"></div>
+            <div class="badge" id="badge-bili">0</div>
+            <div class="app-name">哔哩哔哩</div>
+        </div>
+        <div class="app-item"><div class="app-icon" style="background-color:#5ac8fa"></div><div class="app-name">天气</div></div>
+        <div class="app-item"><div class="app-icon" style="background-color:#34c759"></div><div class="app-name">微信</div></div>
+        <div class="app-item"><div class="app-icon" style="background-color:#ff9500"></div><div class="app-name">设置</div></div>
+        <div class="app-item"><div class="app-icon" style="background-color:#af52de"></div><div class="app-name">播客</div></div>
+        <div class="app-item"><div class="app-icon" style="background-color:#58cc02"></div><div class="app-name">多邻国</div></div>
+        <div class="dock">
+            <div class="app-item"><div class="app-icon" style="background: linear-gradient(#e0e0e0, #8e8e93);"></div></div>
+            <div class="app-item"><div class="app-icon" style="background: #1c1c1e;"></div></div>
+            <div class="app-item"><div class="app-icon" style="background: #fff; border: 1px solid #ddd;"></div></div>
+            <div class="app-item"><div class="app-icon" style="background: #fff; border: 1px solid #ddd;"></div></div>
+        </div>
+    </div>
+    <div id="appView" class="view">
+        <div class="nav-bar"><div class="back-btn" onclick="closeApp()">‹ 桌面</div><div id="appTitle" style="font-weight:600; color:#000;">消息</div><div style="width:40px;"></div></div>
+        <div id="navGrid" class="msg-grid"></div>
+        <div class="msg-list" style="padding:40px; text-align:center; color:#999; font-size:13px;">暂无更多通知</div>
+    </div>
+    <div id="detailView" class="view">
+        <div class="nav-bar"><div class="back-btn" onclick="closeDetail()">‹ 返回</div><div id="detailTitle" style="font-weight:600; color:#000;">收到的回复</div><div style="width:40px;"></div></div>
+        <div id="detailList" class="msg-list" style="background:#f2f2f7;"></div>
+    </div>
+</div>
+<script>
+    function updateClock() {
+        const now = new Date();
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        document.getElementById('currentTime').innerText = `${hours}:${minutes}`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+    const platforms = {
+        weibo: { name: '微博', color: '#eb7350', icons: ['转发', '评论', '赞'], iColors: ['#76afec', '#5db3e6', '#ff8200'], msgs: ["真会蹭啊", "这种三观真是活久见", "你怎么还不封号？", "看IP就知道什么成分"] },
+        xhs: { name: '小红书', color: '#ff2442', icons: ['赞和收藏', '关注', '评论'], iColors: ['#ff4c6a', '#3a8bff', '#00d08d'], msgs: ["避雷！真下真", "只有我觉得装吗？", "这审美绝了", "建议封杀，三观不正"] },
+        bili: { name: '哔哩哔哩', color: '#00aeec', icons: ['回复我的', '点赞我的', '新增粉丝'], iColors: ['#4ed69d', '#ff7081', '#4da6ff'], msgs: ["要素察觉：烂梗", "路人，吃相难看", "小丑竟是你自己", "建议退网，丢人"] }
+    };
+    let unread = { weibo: 0, xhs: 0, bili: 0 };
+    let currentApp = null;
+    setInterval(() => {
+        const keys = ['weibo', 'xhs', 'bili'];
+        const type = keys[Math.floor(Math.random() * 3)];
+        const added = Math.floor(Math.random() * 5) + 3;
+        unread[type] += added;
+        updateBadge(`badge-${type}`, unread[type]);
+        showPush(type);
+        if (currentApp === type && !isDetailActive()) renderNavGrid(type);
+        if (currentApp === type && isDetailActive()) {
+            for(let i=0; i<added; i++) renderCommentRow(type, true);
+        }
+    }, 2500);
+    function showPush(type) {
+        const p = platforms[type];
+        const push = document.getElementById('pushNotif');
+        const icon = document.getElementById('pushIcon');
+        if(!push || !icon) return;
+        icon.style.backgroundColor = p.color;
+        icon.innerText = p.name[0];
+        document.getElementById('pushAppName').innerText = p.name;
+        document.getElementById('pushText').innerText = p.msgs[Math.floor(Math.random()*p.msgs.length)];
+        push.classList.add('show');
+        setTimeout(() => push.classList.remove('show'), 2200);
+    }
+    function openApp(type) {
+        currentApp = type;
+        document.getElementById('appTitle').innerText = platforms[type].name;
+        document.getElementById('appView').classList.add('active');
+        renderNavGrid(type);
+    }
+    function renderNavGrid(type) {
+        const p = platforms[type];
+        const grid = document.getElementById('navGrid');
+        const entryIdx = (type==='bili' ? 0 : (type==='weibo' ? 1 : 2));
+        grid.innerHTML = p.icons.map((label, i) => `
+            <div class="grid-btn" ${i === entryIdx ? 'onclick="openDetail()"' : ''}>
+                <div class="circle-icon" style="background:${p.iColors[i]}">●</div>
+                ${i === entryIdx ? `<div class="badge" style="display:${unread[type]>0?'block':'none'}">${unread[type]>99?'99+':unread[type]}</div>` : ''}
+                <div style="font-size:12px; color:#666; margin-top:2px;">${label}</div>
+            </div>
+        `).join('');
+    }
+    function openDetail() {
+        document.getElementById('detailView').classList.add('active');
+        const list = document.getElementById('detailList');
+        list.innerHTML = '';
+        unread[currentApp] = 0;
+        updateBadge(`badge-${currentApp}`, 0);
+        for(let i=0; i<8; i++) renderCommentRow(currentApp);
+    }
+    function renderCommentRow(type, isPrepend) {
+        const list = document.getElementById('detailList');
+        const div = document.createElement('div');
+        div.className = 'comment-item';
+        div.style.background = '#fff'; div.style.marginBottom = '1px';
+        const msg = platforms[type].msgs[Math.floor(Math.random()*platforms[type].msgs.length)];
+        div.innerHTML = `<div class="avatar"></div><div style="flex:1"><div style="font-size:13px; font-weight:bold; color:#555;">用户_${Math.random().toString(36).substr(-5)}</div><div style="font-size:14px; margin-top:4px;">${msg}</div></div>`;
+        isPrepend ? list.prepend(div) : list.appendChild(div);
+    }
+    function updateBadge(id, count) {
+        const el = document.getElementById(id);
+        if(el) { el.innerText = count>99?'99+':count; el.style.display = count>0?'block':'none'; }
+    }
+    function isDetailActive() { return document.getElementById('detailView').classList.contains('active'); }
+    function closeApp() { document.getElementById('appView').classList.remove('active'); currentApp = null; }
+    function closeDetail() { document.getElementById('detailView').classList.remove('active'); if(currentApp) renderNavGrid(currentApp); }
+</script>
+</body>
+</html>
