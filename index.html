@@ -117,7 +117,7 @@
         }
 
         .battery-level {
-            height: 8px;
+            height: 12px;
             border-radius: 1.5px;
             width: 18%;
             background: var(--ios-red);
@@ -665,49 +665,49 @@
 
         <div class="desktop" id="homeScreen">
             <div class="app-item">
-                <div class="app-icon" style="background-color:#5ac8fa"></div>
+                <div class="app-icon" style="background-image: url('./public/weather.png');"></div>
                 <div class="app-name">天气</div>
             </div>
             <div class="app-item">
-                <div class="app-icon" style="background-color:#34c759"></div>
+                <div class="app-icon" style="background-image: url('./public/wechat.png');"></div>
                 <div class="app-name">微信</div>
             </div>
             <div class="app-item">
-                <div class="app-icon" style="background-color:#ff9500"></div>
+                <div class="app-icon" style="background-image: url('./public/setting.jpg');"></div>
                 <div class="app-name">设置</div>
             </div>
             <div class="app-item">
-                <div class="app-icon" style="background-color:#af52de"></div>
+                <div class="app-icon" style="background-image: url('./public/podcast.png');"></div>
                 <div class="app-name">播客</div>
             </div>
             <div class="app-item">
-                <div class="app-icon" style="background-color:#58cc02"></div>
-                <div class="app-name">多邻国</div>
+                <div class="app-icon" style="background-image: url('./public/duolingo.jpg');"></div>
+                <div class="app-name">某邻国</div>
             </div>
             <div class="app-item" onclick="openApp('weibo')">
-                <div class="app-icon" style="background: linear-gradient(135deg, #ff9933, #eb7350);"></div>
+                <div class="app-icon" style="background-image: url('./public/weibo.jpg');"></div>
                 <div class="badge" id="badge-weibo">0</div>
-                <div class="app-name">微博</div>
+                <div class="app-name">厚博</div>
             </div>
             <div class="app-item" onclick="openApp('xhs')">
-                <div class="app-icon" style="background-color:var(--xhs)"></div>
+                <div class="app-icon" style="background-image: url('./public/redbook.png');"></div>
                 <div class="badge" id="badge-xhs">0</div>
-                <div class="app-name">小红书</div>
+                <div class="app-name">小赤书</div>
             </div>
             <div class="app-item" onclick="openApp('bili')">
-                <div class="app-icon" style="background-color:var(--bili)"></div>
+                <div class="app-icon" style="background-image: url('./public/bilibili.png');"></div>
                 <div class="badge" id="badge-bili">0</div>
-                <div class="app-name">哔哩哔哩</div>
+                <div class="app-name">ギリギリ</div>
             </div>
             <div class="dock">
                 <div class="app-item">
-                    <div class="app-icon" style="background: linear-gradient(#e0e0e0, #8e8e93);"></div>
+                    <div class="app-icon" style="background-image: url('./public/camera.jpg');"></div>
                 </div>
                 <div class="app-item">
-                    <div class="app-icon" style="background: #1c1c1e;"></div>
+                    <div class="app-icon" style="background-image: url('./public/cash.png');"></div>
                 </div>
                 <div class="app-item" onclick="openApp('sms')">
-                    <div class="app-icon" style="background: var(--ios-green);">
+                    <div class="app-icon" style="background-image: url('./public/message.jpg');">
                         <svg width="35" height="35" viewBox="0 0 24 24" fill="white">
                             <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
                         </svg>
@@ -715,7 +715,7 @@
                     <div class="badge" id="badge-sms">0</div>
                 </div>
                 <div class="app-item">
-                    <div class="app-icon" style="background: #fff; border: 1px solid #ddd;"></div>
+                    <div class="app-icon" style="background-image: url('./public/browser.png');"></div>
                 </div>
             </div>
         </div>
@@ -815,7 +815,7 @@
             const push = document.getElementById('pushNotif');
             const icon = document.getElementById('pushIcon');
             icon.style.backgroundColor = p.color;
-            icon.innerHTML = type === 'sms' ? '💬' : (type === 'weibo' ? '👁️' : p.name[0]);
+            icon.innerHTML = type === 'sms' ? '💬' : (type === 'weibo' ? '❀' : p.name[0]);
             document.getElementById('pushAppName').innerText = p.name;
             document.getElementById('pushText').innerText = p.msgs[Math.floor(Math.random() * p.msgs.length)];
             push.classList.add('show');
