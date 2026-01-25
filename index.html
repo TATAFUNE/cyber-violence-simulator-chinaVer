@@ -574,6 +574,60 @@
             background-size: cover;
             flex-shrink: 0;
         }
+        /* 微博专属样式 */
+        .weibo-mode.msg-grid {
+            border-bottom: 0.5px solid #eee;
+            padding: 15px 5px;
+        }
+
+        .weibo-comment {
+            padding: 12px 16px;
+            background: #fff;
+            border-bottom: 0.5px solid #f2f2f7;
+            align-items: flex-start;
+        }
+
+        .weibo-comment .u-name {
+            font-size: 15px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .weibo-comment .u-meta {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 8px;
+        }
+
+        .weibo-comment .u-text {
+            font-size: 15px;
+            color: #333;
+            line-height: 1.5;
+        }
+
+        .weibo-comment .post-preview {
+            width: 50px;
+            height: 50px;
+            border-radius: 4px;
+            background: #f8f8f8;
+            flex-shrink: 0;
+            background-size: cover;
+        }
+
+        .weibo-search-bar {
+            background: #f2f2f2;
+            margin: 10px 16px;
+            padding: 8px;
+            border-radius: 20px;
+            text-align: center;
+            color: #999;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
     </style>
 </head>
 
@@ -702,10 +756,32 @@
         updateClock();
 
         const platforms = {
-            weibo: { name: '微博', color: '#eb7350', icons: ['转发', '评论', '赞'], iColors: ['#76afec', '#5db3e6', '#ff8200'], msgs: ["真会蹭啊", "这种三观真是活久见", "你怎么还不封号？", "看IP就知道什么成分"] },
-            xhs: { name: '小红书', color: '#ff2442', icons: ['赞和收藏', '新增关注', '评论和 @'], iColors: ['#fff0f0', '#eff6ff', '#e6fffa'], msgs: ["避雷！真下真", "只有我觉得装吗？", "这审美绝了", "建议封杀，三观不正"] },
-            bili: { name: '哔哩哔哩', color: '#fb7299', icons: ['回复与@', '收到喜欢', '新增粉丝'], iColors: ['#e1f5fe', '#fff1f1', '#e3f2fd'], msgs: ["刷新啦，Steve发现石像啦[吃瓜]", "要素察觉：烂梗", "路人，吃相难看", "小丑竟是你自己", "建议退网，丢人"] },
-            sms: { name: '信息', color: '#34c759', msgs: ["你是本人吗？真恶心", "全家火葬场，不送", "已经定位你家地址了", "这种人怎么还不去死啊？", "你就是个笑话"] }
+            weibo: { 
+                name: '消息', 
+                color: '#eb7350', 
+                icons: ['@我的', '评论', '赞'], 
+                iColors: ['#76afec', '#71c371', '#ffb33b'], 
+                msgs: ["虽然很少人这么做 但是请不必因为这条微博fo我", "真会蹭啊，这种三观真是活久见", "你怎么还不封号？", "看IP就知道什么成分"] 
+            },
+            xhs: { 
+                name: '小红书', 
+                color: '#ff2442', 
+                icons: ['赞和收藏', '新增关注', '评论和 @'], 
+                iColors: ['#fff0f0', '#eff6ff', '#e6fffa'], 
+                msgs: ["避雷！真下真", "只有我觉得装吗？", "这审美绝了", "建议封杀，三观不正"] 
+            },
+            bili: { 
+                name: '哔哩哔哩', 
+                color: '#fb7299', 
+                icons: ['回复与@', '收到喜欢', '新增粉丝'], 
+                iColors: ['#e1f5fe', '#fff1f1', '#e3f2fd'], 
+                msgs: ["刷新啦，Steve发现石像啦[吃瓜]", "要素察觉：烂梗", "路人，吃相难看", "小丑竟是你自己"] 
+            },
+            sms: { 
+                name: '信息', 
+                color: '#34c759', 
+                msgs: ["你是本人吗？真恶心", "全家火葬场，不送", "已经定位你家地址了", "这种人怎么还不去死啊？"] 
+            }
         };
 
         let unread = { weibo: 0, xhs: 0, bili: 0, sms: 0 };
@@ -725,7 +801,7 @@
                 smsHistory.unshift({
                     num: `13${Math.floor(Math.random() * 9)} **** ${Math.floor(Math.random() * 8999 + 1000)}`,
                     text: platforms.sms.msgs[Math.floor(Math.random() * platforms.sms.msgs.length)],
-                    time: '12:41'
+                    time: '16:58'
                 });
             }
 
@@ -739,7 +815,7 @@
             const push = document.getElementById('pushNotif');
             const icon = document.getElementById('pushIcon');
             icon.style.backgroundColor = p.color;
-            icon.innerHTML = type === 'sms' ? '💬' : p.name[0];
+            icon.innerHTML = type === 'sms' ? '💬' : (type === 'weibo' ? '👁️' : p.name[0]);
             document.getElementById('pushAppName').innerText = p.name;
             document.getElementById('pushText').innerText = p.msgs[Math.floor(Math.random() * p.msgs.length)];
             push.classList.add('show');
@@ -757,73 +833,118 @@
             appView.classList.add('active');
 
             navGrid.className = 'msg-grid';
-            if (type === 'xhs') navGrid.classList.add('xhs-mode');
-            if (type === 'bili') {
-                navGrid.classList.add('bili-mode');
+            navGrid.style.display = 'flex';
+            
+            if (type === 'weibo') {
                 settingIcon.innerHTML = '⚙️';
+                navGrid.style.flexDirection = 'column';
+                navGrid.style.padding = '0';
+                const searchBar = '<div style="background:#f3f3f3; margin:10px 15px; padding:8px; border-radius:10px; text-align:center; color:#999; font-size:14px;">🔍 搜索聊天记录、群号</div>';
+                msgArea.innerHTML = searchBar + '<div class="sms-item" style="border-bottom:none;"><div class="sms-avatar" style="background:#ff734a">💬</div><div class="sms-content"><div class="sms-top"><span class="sms-num">留言板</span><span class="sms-time">昨天</span></div><div class="sms-preview">超话社区：热爱集结！2026#超话大赏#...</div></div></div>';
             } else {
-                settingIcon.innerHTML = '✎';
+                settingIcon.innerHTML = type === 'bili' ? '⚙️' : '✎';
+                navGrid.style.flexDirection = 'row';
+                navGrid.style.padding = (type === 'xhs' || type === 'bili') ? '20px 10px' : '25px 10px';
+                if (type === 'xhs') navGrid.classList.add('xhs-mode');
+                if (type === 'bili') navGrid.classList.add('bili-mode');
+                msgArea.innerHTML = '';
             }
 
             if (type === 'sms') {
                 navGrid.style.display = 'none';
-                msgArea.style.display = 'block';
                 renderSmsList();
             } else {
-                navGrid.style.display = 'flex';
-                msgArea.style.display = 'block';
-                msgArea.innerHTML = '<div style="padding:40px; text-align:center; color:#999; font-size:13px;">暂无更多通知</div>';
                 renderNavGrid(type);
             }
-        }
-
-        function renderSmsList() {
-            const area = document.getElementById('msgListArea');
-            if (smsHistory.length === 0) {
-                area.innerHTML = '<div style="padding:40px; text-align:center; color:#999;">无信息</div>';
-                return;
-            }
-            area.innerHTML = smsHistory.map((s, i) => `
-            <div class="sms-item" onclick="openSmsDetail(${i})">
-                <div class="sms-avatar">👤</div>
-                <div class="sms-content">
-                    <div class="sms-top">
-                        <span class="sms-num">${s.num}</span>
-                        <span class="sms-time">${s.time}</span>
-                    </div>
-                    <div class="sms-preview">${s.text}</div>
-                </div>
-            </div>
-        `).join('');
         }
 
         function renderNavGrid(type) {
             const p = platforms[type];
             const grid = document.getElementById('navGrid');
+            const weiboIcons = ['@', '💬', '👍'];
             const xhsIcons = ['❤️', '👤', '💬'];
             const biliIcons = ['💬', '👍', '👤'];
-            const entryIdx = (type === 'xhs' ? 2 : (type === 'bili' ? 0 : 1));
             
             grid.innerHTML = p.icons.map((label, i) => {
+                const isWeibo = type === 'weibo';
+                const itemStyle = isWeibo ? 'width:100%; flex-direction:row; padding:15px; border-bottom:0.5px solid #eee; justify-content:flex-start; gap:15px;' : '';
+                const iconStyle = isWeibo ? 'width:42px; height:42px; border-radius:50%; margin-bottom:0;' : '';
+                
                 let iconContent = '●';
                 let iconColor = '#fff';
-                if(type === 'xhs') {
-                    iconContent = xhsIcons[i];
-                    iconColor = p.color;
-                } else if(type === 'bili') {
-                    iconContent = biliIcons[i];
-                    iconColor = (i===0?'#4ed69d':(i===1?'#ff7081':'#4da6ff'));
-                }
+                if(isWeibo) iconContent = weiboIcons[i];
+                if(type === 'xhs') { iconContent = xhsIcons[i]; iconColor = p.color; }
+                if(type === 'bili') { iconContent = biliIcons[i]; iconColor = (i===0?'#4ed69d':(i===1?'#ff7081':'#4da6ff')); }
+
+                const entryIdx = (type === 'xhs' ? 2 : (type === 'bili' ? 0 : 1));
 
                 return `
-                <div class="grid-btn" ${i === entryIdx ? 'onclick="openDetail()"' : ''}>
-                    <div class="circle-icon" style="background:${p.iColors[i]}; color:${iconColor}">
+                <div class="grid-btn" ${i === entryIdx ? 'onclick="openDetail()"' : ''} style="${itemStyle}">
+                    <div class="circle-icon" style="background:${p.iColors[i]}; color:${iconColor}; ${iconStyle}">
                         ${iconContent}
                     </div>
-                    ${i === entryIdx ? `<div class="badge" style="display:${unread[type] > 0 ? 'block' : 'none'}">${unread[type] > 99 ? '99+' : unread[type]}</div>` : ''}
-                    <div style="font-size:12px; color:#333; margin-top:2px;">${label}</div>
+                    <div style="${isWeibo ? 'font-size:17px; flex:1; text-align:left; color:#333;' : 'font-size:12px;'}">${label}</div>
+                    ${isWeibo ? '<div style="color:#ccc; font-size:20px;">›</div>' : ''}
+                    ${i === entryIdx ? `<div class="badge" style="display:${unread[type] > 0 ? 'block' : 'none'}">${unread[type]}</div>` : ''}
                 </div>
             `}).join('');
+        }
+
+        function openDetail() {
+            document.getElementById('detailView').classList.add('active');
+            document.getElementById('smsInput').style.display = 'none';
+            document.getElementById('detailTitle').innerText = currentApp === 'weibo' ? '所有评论' : '收到的回复';
+            const list = document.getElementById('detailList');
+            list.innerHTML = '';
+            unread[currentApp] = 0;
+            updateBadge(`badge-${currentApp}`, 0);
+            for (let i = 0; i < 6; i++) renderCommentRow(currentApp);
+        }
+
+        function renderCommentRow(type, isPrepend) {
+            const list = document.getElementById('detailList');
+            const div = document.createElement('div');
+            const user = type === 'weibo' ? "五月青枫" : `ciciyang_${Math.floor(Math.random()*1000)}`;
+            const msg = platforms[type].msgs[Math.floor(Math.random() * platforms[type].msgs.length)];
+            const avatar = `https://api.dicebear.com/7.x/avataaars/svg?seed=${user}`;
+
+            if (type === 'weibo') {
+                div.className = 'comment-item';
+                div.style.padding = '15px';
+                div.innerHTML = `
+                    <div class="avatar" style="background-image:url('${avatar}')"></div>
+                    <div style="flex:1">
+                        <div style="font-size:15px; font-weight:600; color:#333;">${user}</div>
+                        <div style="font-size:12px; color:#999; margin:3px 0 8px;">博主发表了评论 24-12-16</div>
+                        <div style="font-size:15px; color:#333; line-height:1.5;">${msg}</div>
+                        <div style="display:flex; gap:10px; margin-top:12px;">
+                            <div style="background:#f5f5f5; padding:4px 15px; border-radius:15px; font-size:13px; color:#666;">回复</div>
+                            <div style="background:#f5f5f5; padding:4px 15px; border-radius:15px; font-size:13px; color:#666;">赞</div>
+                        </div>
+                    </div>
+                    <div style="width:50px; height:50px; background:#eee; border-radius:4px; background-image:url('https://picsum.photos/100?random=${Math.random()}'); background-size:cover;"></div>
+                `;
+            } else if (type === 'xhs') {
+                div.className = 'comment-item xhs-comment';
+                div.innerHTML = `<div class="avatar" style="background-image:url('${avatar}')"></div><div style="flex:1"><div class="u-name">${user}</div><div class="u-meta">评论了你的笔记 · 刚刚</div><div class="u-text"><span>@本人</span>${msg}</div></div><div class="post-preview" style="background-image:url('https://picsum.photos/100?random=${Math.random()}')"></div>`;
+            } else if (type === 'bili') {
+                div.className = 'comment-item bili-comment';
+                div.innerHTML = `<div style="display:flex; gap:12px; width:100%"><div class="avatar" style="background-image:url('${avatar}')"></div><div style="flex:1"><div style="display:flex; align-items:center"><span class="u-name">${user}</span><span class="u-action">对我的视频发表了评论</span></div><div class="u-text">${msg}</div><div class="u-time">刚刚 · 💬 回复 · 👍 点赞</div></div><div class="video-preview" style="background-image:url('https://picsum.photos/100?random=${Math.random()}')"></div></div>`;
+            }
+            isPrepend ? list.prepend(div) : list.appendChild(div);
+        }
+
+        function renderSmsList() {
+            const area = document.getElementById('msgListArea');
+            area.innerHTML = smsHistory.map((s, i) => `
+                <div class="sms-item" onclick="openSmsDetail(${i})">
+                    <div class="sms-avatar">👤</div>
+                    <div class="sms-content">
+                        <div class="sms-top"><span class="sms-num">${s.num}</span><span class="sms-time">${s.time}</span></div>
+                        <div class="sms-preview">${s.text}</div>
+                    </div>
+                </div>
+            `).join('');
         }
 
         function openSmsDetail(index) {
@@ -833,70 +954,10 @@
             document.getElementById('detailTitle').innerText = sms.num;
             document.getElementById('smsInput').style.display = 'flex';
             detail.classList.add('active');
-
             list.className = "bubble-container";
-            list.innerHTML = `
-            <div class="date-divider">昨天 12:41</div>
-            <div class="bubble left">${sms.text}</div>
-            <div class="bubble right">你是谁？为什么要骂我？</div>
-            <div class="bubble left">你自己干了什么心里没数？装什么白莲花？</div>
-        `;
+            list.innerHTML = `<div class="date-divider">下午 16:58</div><div class="bubble left">${sms.text}</div><div class="bubble right">你是谁？</div>`;
             unread.sms = Math.max(0, unread.sms - 1);
             updateBadge('badge-sms', unread.sms);
-        }
-
-        function openDetail() {
-            document.getElementById('detailView').classList.add('active');
-            document.getElementById('smsInput').style.display = 'none';
-            document.getElementById('detailTitle').innerText = currentApp === 'bili' ? '回复与 @' : '收到的回复';
-            const list = document.getElementById('detailList');
-            list.className = "msg-list";
-            list.innerHTML = '';
-            unread[currentApp] = 0;
-            updateBadge(`badge-${currentApp}`, 0);
-            for (let i = 0; i < 8; i++) renderCommentRow(currentApp);
-        }
-
-        function renderCommentRow(type, isPrepend) {
-            const list = document.getElementById('detailList');
-            const div = document.createElement('div');
-            const user = `ciciyang_${Math.floor(Math.random()*1000)}`;
-            const msg = platforms[type].msgs[Math.floor(Math.random() * platforms[type].msgs.length)];
-            const randomAvatar = `https://api.dicebear.com/7.x/avataaars/svg?seed=${user}`;
-
-            if (type === 'xhs') {
-                div.className = 'comment-item xhs-comment';
-                div.innerHTML = `
-                    <div class="avatar" style="background-image:url('${randomAvatar}')"></div>
-                    <div style="flex:1">
-                        <div class="u-name">${user}</div>
-                        <div class="u-meta">评论了你的笔记 · 刚刚</div>
-                        <div class="u-text"><span>@本人</span>${msg}</div>
-                    </div>
-                    <div class="post-preview" style="background-image:url('https://picsum.photos/100?random=${Math.random()}')"></div>
-                `;
-            } else if (type === 'bili') {
-                div.className = 'comment-item bili-comment';
-                div.innerHTML = `
-                    <div style="display:flex; gap:12px; width:100%">
-                        <div class="avatar" style="background-image:url('${randomAvatar}')"></div>
-                        <div style="flex:1">
-                            <div style="display:flex; align-items:center">
-                                <span class="u-name">${user}</span>
-                                <span class="u-action">对我的视频发表了评论</span>
-                            </div>
-                            <div class="u-text">${msg}</div>
-                            <div class="u-time">3小时前 · 💬 回复 · 👍 点赞</div>
-                        </div>
-                        <div class="video-preview" style="background-image:url('https://picsum.photos/100?random=${Math.random()}')"></div>
-                    </div>
-                `;
-            } else {
-                div.className = 'comment-item';
-                div.style.background = '#fff';
-                div.innerHTML = `<div class="avatar" style="background-image:url('${randomAvatar}')"></div><div style="flex:1"><div style="font-size:13px; font-weight:bold; color:#555;">${user}</div><div style="font-size:14px; margin-top:4px;">${msg}</div></div>`;
-            }
-            isPrepend ? list.prepend(div) : list.appendChild(div);
         }
 
         function updateBadge(id, count) {
@@ -907,7 +968,7 @@
         function isDetailActive() { return document.getElementById('detailView').classList.contains('active'); }
         function closeApp() { document.getElementById('appView').classList.remove('active'); currentApp = null; }
         function closeDetail() { document.getElementById('detailView').classList.remove('active'); if (currentApp) openApp(currentApp); }
-    </script>
+  </script>
 </body>
 
 </html>
