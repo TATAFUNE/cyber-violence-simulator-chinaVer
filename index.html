@@ -574,6 +574,7 @@
             background-size: cover;
             flex-shrink: 0;
         }
+
         /* 微博专属样式 */
         .weibo-mode.msg-grid {
             border-bottom: 0.5px solid #eee;
@@ -756,31 +757,31 @@
         updateClock();
 
         const platforms = {
-            weibo: { 
-                name: '消息', 
-                color: '#eb7350', 
-                icons: ['@我的', '评论', '赞'], 
-                iColors: ['#76afec', '#71c371', '#ffb33b'], 
-                msgs: ["虽然很少人这么做 但是请不必因为这条微博fo我", "真会蹭啊，这种三观真是活久见", "你怎么还不封号？", "看IP就知道什么成分"] 
+            weibo: {
+                name: '消息',
+                color: '#eb7350',
+                icons: ['@我的', '评论', '赞'],
+                iColors: ['#76afec', '#71c371', '#ffb33b'],
+                msgs: ["虽然很少人这么做 但是请不必因为这条微博fo我", "真会蹭啊，这种三观真是活久见", "你怎么还不封号？", "看IP就知道什么成分"]
             },
-            xhs: { 
-                name: '小红书', 
-                color: '#ff2442', 
-                icons: ['赞和收藏', '新增关注', '评论和 @'], 
-                iColors: ['#fff0f0', '#eff6ff', '#e6fffa'], 
-                msgs: ["避雷！真下真", "只有我觉得装吗？", "这审美绝了", "建议封杀，三观不正"] 
+            xhs: {
+                name: '小红书',
+                color: '#ff2442',
+                icons: ['赞和收藏', '新增关注', '评论和 @'],
+                iColors: ['#fff0f0', '#eff6ff', '#e6fffa'],
+                msgs: ["避雷！真下真", "只有我觉得装吗？", "这审美绝了", "建议封杀，三观不正"]
             },
-            bili: { 
-                name: '哔哩哔哩', 
-                color: '#fb7299', 
-                icons: ['回复与@', '收到喜欢', '新增粉丝'], 
-                iColors: ['#e1f5fe', '#fff1f1', '#e3f2fd'], 
-                msgs: ["刷新啦，Steve发现石像啦[吃瓜]", "要素察觉：烂梗", "路人，吃相难看", "小丑竟是你自己"] 
+            bili: {
+                name: '哔哩哔哩',
+                color: '#fb7299',
+                icons: ['回复与@', '收到喜欢', '新增粉丝'],
+                iColors: ['#e1f5fe', '#fff1f1', '#e3f2fd'],
+                msgs: ["刷新啦，Steve发现石像啦[吃瓜]", "要素察觉：烂梗", "路人，吃相难看", "小丑竟是你自己"]
             },
-            sms: { 
-                name: '信息', 
-                color: '#34c759', 
-                msgs: ["你是本人吗？真恶心", "全家火葬场，不送", "已经定位你家地址了", "这种人怎么还不去死啊？"] 
+            sms: {
+                name: '信息',
+                color: '#34c759',
+                msgs: ["你是本人吗？真恶心", "全家火葬场，不送", "已经定位你家地址了", "这种人怎么还不去死啊？"]
             }
         };
 
@@ -834,7 +835,7 @@
 
             navGrid.className = 'msg-grid';
             navGrid.style.display = 'flex';
-            
+
             if (type === 'weibo') {
                 settingIcon.innerHTML = '⚙️';
                 navGrid.style.flexDirection = 'column';
@@ -864,17 +865,17 @@
             const weiboIcons = ['@', '💬', '👍'];
             const xhsIcons = ['❤️', '👤', '💬'];
             const biliIcons = ['💬', '👍', '👤'];
-            
+
             grid.innerHTML = p.icons.map((label, i) => {
                 const isWeibo = type === 'weibo';
                 const itemStyle = isWeibo ? 'width:100%; flex-direction:row; padding:15px; border-bottom:0.5px solid #eee; justify-content:flex-start; gap:15px;' : '';
                 const iconStyle = isWeibo ? 'width:42px; height:42px; border-radius:50%; margin-bottom:0;' : '';
-                
+
                 let iconContent = '●';
                 let iconColor = '#fff';
-                if(isWeibo) iconContent = weiboIcons[i];
-                if(type === 'xhs') { iconContent = xhsIcons[i]; iconColor = p.color; }
-                if(type === 'bili') { iconContent = biliIcons[i]; iconColor = (i===0?'#4ed69d':(i===1?'#ff7081':'#4da6ff')); }
+                if (isWeibo) iconContent = weiboIcons[i];
+                if (type === 'xhs') { iconContent = xhsIcons[i]; iconColor = p.color; }
+                if (type === 'bili') { iconContent = biliIcons[i]; iconColor = (i === 0 ? '#4ed69d' : (i === 1 ? '#ff7081' : '#4da6ff')); }
 
                 const entryIdx = (type === 'xhs' ? 2 : (type === 'bili' ? 0 : 1));
 
@@ -904,7 +905,7 @@
         function renderCommentRow(type, isPrepend) {
             const list = document.getElementById('detailList');
             const div = document.createElement('div');
-            const user = type === 'weibo' ? "五月青枫" : `ciciyang_${Math.floor(Math.random()*1000)}`;
+            const user = type === 'weibo' ? "五月青枫" : `ciciyang_${Math.floor(Math.random() * 1000)}`;
             const msg = platforms[type].msgs[Math.floor(Math.random() * platforms[type].msgs.length)];
             const avatar = `https://api.dicebear.com/7.x/avataaars/svg?seed=${user}`;
 
@@ -968,7 +969,7 @@
         function isDetailActive() { return document.getElementById('detailView').classList.contains('active'); }
         function closeApp() { document.getElementById('appView').classList.remove('active'); currentApp = null; }
         function closeDetail() { document.getElementById('detailView').classList.remove('active'); if (currentApp) openApp(currentApp); }
-  </script>
+    </script>
 </body>
 
 </html>
