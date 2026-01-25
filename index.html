@@ -478,6 +478,7 @@
             border-radius: 50%;
             background: #e5e5ea;
             flex-shrink: 0;
+            background-size: cover;
         }
 
         /* XHS Specific */
@@ -528,6 +529,50 @@
             background: #eee;
             flex-shrink: 0;
             background-size: cover;
+        }
+
+        /* Bili Specific Styles */
+        .bili-mode.msg-grid {
+            border-bottom: 1px solid #f2f2f7;
+            padding: 20px 10px;
+        }
+
+        .bili-comment {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .bili-comment .u-name {
+            font-size: 14px;
+            color: #fb7299;
+            font-weight: 500;
+        }
+
+        .bili-comment .u-action {
+            font-size: 13px;
+            color: #666;
+            margin-left: 5px;
+        }
+
+        .bili-comment .u-text {
+            font-size: 14px;
+            color: #212121;
+            margin: 8px 0;
+            line-height: 1.4;
+        }
+
+        .bili-comment .u-time {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .bili-comment .video-preview {
+            width: 50px;
+            height: 50px;
+            border-radius: 4px;
+            background: #eee;
+            background-size: cover;
+            flex-shrink: 0;
         }
     </style>
 </head>
@@ -596,7 +641,7 @@
                 <div class="app-name">小红书</div>
             </div>
             <div class="app-item" onclick="openApp('bili')">
-                <div class="app-icon" style="background-color:#00aeec"></div>
+                <div class="app-icon" style="background-color:var(--bili)"></div>
                 <div class="badge" id="badge-bili">0</div>
                 <div class="app-name">哔哩哔哩</div>
             </div>
@@ -625,7 +670,7 @@
             <div class="nav-bar">
                 <div class="back-btn" onclick="closeApp()">‹ 桌面</div>
                 <div id="appTitle" class="nav-title">信息</div>
-                <div style="color:var(--ios-blue); font-size: 22px;">✎</div>
+                <div id="appSettingIcon" style="color:var(--ios-blue); font-size: 22px;">✎</div>
             </div>
             <div id="navGrid" class="msg-grid"></div>
             <div id="msgListArea" class="msg-list"></div>
@@ -633,8 +678,8 @@
 
         <div id="detailView" class="view">
             <div class="nav-bar">
-                <div class="back-btn" onclick="closeDetail()">‹ 信息</div>
-                <div id="detailTitle" class="nav-title">收到的回复</div>
+                <div class="back-btn" onclick="closeDetail()">‹ 返回</div>
+                <div id="detailTitle" class="nav-title">回复我的</div>
                 <div style="width:24px;"></div>
             </div>
             <div id="detailList" class="msg-list"></div>
@@ -659,7 +704,7 @@
         const platforms = {
             weibo: { name: '微博', color: '#eb7350', icons: ['转发', '评论', '赞'], iColors: ['#76afec', '#5db3e6', '#ff8200'], msgs: ["真会蹭啊", "这种三观真是活久见", "你怎么还不封号？", "看IP就知道什么成分"] },
             xhs: { name: '小红书', color: '#ff2442', icons: ['赞和收藏', '新增关注', '评论和 @'], iColors: ['#fff0f0', '#eff6ff', '#e6fffa'], msgs: ["避雷！真下真", "只有我觉得装吗？", "这审美绝了", "建议封杀，三观不正"] },
-            bili: { name: '哔哩哔哩', color: '#00aeec', icons: ['回复我的', '点赞我的', '新增粉丝'], iColors: ['#4ed69d', '#ff7081', '#4da6ff'], msgs: ["要素察觉：烂梗", "路人，吃相难看", "小丑竟是你自己", "建议退网，丢人"] },
+            bili: { name: '哔哩哔哩', color: '#fb7299', icons: ['回复与@', '收到喜欢', '新增粉丝'], iColors: ['#e1f5fe', '#fff1f1', '#e3f2fd'], msgs: ["刷新啦，Steve发现石像啦[吃瓜]", "要素察觉：烂梗", "路人，吃相难看", "小丑竟是你自己", "建议退网，丢人"] },
             sms: { name: '信息', color: '#34c759', msgs: ["你是本人吗？真恶心", "全家火葬场，不送", "已经定位你家地址了", "这种人怎么还不去死啊？", "你就是个笑话"] }
         };
 
@@ -706,11 +751,19 @@
             const appView = document.getElementById('appView');
             const navGrid = document.getElementById('navGrid');
             const msgArea = document.getElementById('msgListArea');
+            const settingIcon = document.getElementById('appSettingIcon');
 
             document.getElementById('appTitle').innerText = platforms[type].name;
             appView.classList.add('active');
 
-            type === 'xhs' ? navGrid.classList.add('xhs-mode') : navGrid.classList.remove('xhs-mode');
+            navGrid.className = 'msg-grid';
+            if (type === 'xhs') navGrid.classList.add('xhs-mode');
+            if (type === 'bili') {
+                navGrid.classList.add('bili-mode');
+                settingIcon.innerHTML = '⚙️';
+            } else {
+                settingIcon.innerHTML = '✎';
+            }
 
             if (type === 'sms') {
                 navGrid.style.display = 'none';
@@ -748,17 +801,29 @@
             const p = platforms[type];
             const grid = document.getElementById('navGrid');
             const xhsIcons = ['❤️', '👤', '💬'];
+            const biliIcons = ['💬', '👍', '👤'];
             const entryIdx = (type === 'xhs' ? 2 : (type === 'bili' ? 0 : 1));
             
-            grid.innerHTML = p.icons.map((label, i) => `
-            <div class="grid-btn" ${i === entryIdx ? 'onclick="openDetail()"' : ''}>
-                <div class="circle-icon" style="background:${p.iColors[i]}; color:${type === 'xhs' ? p.color : '#fff'}">
-                    ${type === 'xhs' ? xhsIcons[i] : '●'}
+            grid.innerHTML = p.icons.map((label, i) => {
+                let iconContent = '●';
+                let iconColor = '#fff';
+                if(type === 'xhs') {
+                    iconContent = xhsIcons[i];
+                    iconColor = p.color;
+                } else if(type === 'bili') {
+                    iconContent = biliIcons[i];
+                    iconColor = (i===0?'#4ed69d':(i===1?'#ff7081':'#4da6ff'));
+                }
+
+                return `
+                <div class="grid-btn" ${i === entryIdx ? 'onclick="openDetail()"' : ''}>
+                    <div class="circle-icon" style="background:${p.iColors[i]}; color:${iconColor}">
+                        ${iconContent}
+                    </div>
+                    ${i === entryIdx ? `<div class="badge" style="display:${unread[type] > 0 ? 'block' : 'none'}">${unread[type] > 99 ? '99+' : unread[type]}</div>` : ''}
+                    <div style="font-size:12px; color:#333; margin-top:2px;">${label}</div>
                 </div>
-                ${i === entryIdx ? `<div class="badge" style="display:${unread[type] > 0 ? 'block' : 'none'}">${unread[type] > 99 ? '99+' : unread[type]}</div>` : ''}
-                <div style="font-size:12px; color:#333; margin-top:2px;">${label}</div>
-            </div>
-        `).join('');
+            `}).join('');
         }
 
         function openSmsDetail(index) {
@@ -783,6 +848,7 @@
         function openDetail() {
             document.getElementById('detailView').classList.add('active');
             document.getElementById('smsInput').style.display = 'none';
+            document.getElementById('detailTitle').innerText = currentApp === 'bili' ? '回复与 @' : '收到的回复';
             const list = document.getElementById('detailList');
             list.className = "msg-list";
             list.innerHTML = '';
@@ -794,13 +860,14 @@
         function renderCommentRow(type, isPrepend) {
             const list = document.getElementById('detailList');
             const div = document.createElement('div');
-            const user = `用户_${Math.random().toString(36).substr(-5)}`;
+            const user = `ciciyang_${Math.floor(Math.random()*1000)}`;
             const msg = platforms[type].msgs[Math.floor(Math.random() * platforms[type].msgs.length)];
+            const randomAvatar = `https://api.dicebear.com/7.x/avataaars/svg?seed=${user}`;
 
             if (type === 'xhs') {
                 div.className = 'comment-item xhs-comment';
                 div.innerHTML = `
-                    <div class="avatar" style="background-image:url('https://api.dicebear.com/7.x/avataaars/svg?seed=${user}')"></div>
+                    <div class="avatar" style="background-image:url('${randomAvatar}')"></div>
                     <div style="flex:1">
                         <div class="u-name">${user}</div>
                         <div class="u-meta">评论了你的笔记 · 刚刚</div>
@@ -808,10 +875,26 @@
                     </div>
                     <div class="post-preview" style="background-image:url('https://picsum.photos/100?random=${Math.random()}')"></div>
                 `;
+            } else if (type === 'bili') {
+                div.className = 'comment-item bili-comment';
+                div.innerHTML = `
+                    <div style="display:flex; gap:12px; width:100%">
+                        <div class="avatar" style="background-image:url('${randomAvatar}')"></div>
+                        <div style="flex:1">
+                            <div style="display:flex; align-items:center">
+                                <span class="u-name">${user}</span>
+                                <span class="u-action">对我的视频发表了评论</span>
+                            </div>
+                            <div class="u-text">${msg}</div>
+                            <div class="u-time">3小时前 · 💬 回复 · 👍 点赞</div>
+                        </div>
+                        <div class="video-preview" style="background-image:url('https://picsum.photos/100?random=${Math.random()}')"></div>
+                    </div>
+                `;
             } else {
                 div.className = 'comment-item';
                 div.style.background = '#fff';
-                div.innerHTML = `<div class="avatar"></div><div style="flex:1"><div style="font-size:13px; font-weight:bold; color:#555;">${user}</div><div style="font-size:14px; margin-top:4px;">${msg}</div></div>`;
+                div.innerHTML = `<div class="avatar" style="background-image:url('${randomAvatar}')"></div><div style="flex:1"><div style="font-size:13px; font-weight:bold; color:#555;">${user}</div><div style="font-size:14px; margin-top:4px;">${msg}</div></div>`;
             }
             isPrepend ? list.prepend(div) : list.appendChild(div);
         }
